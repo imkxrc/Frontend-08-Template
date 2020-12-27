@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>黄永胜前端进阶</title>
+		<style type="text/css">
+			.cell{
+				width: 100px;
+				height: 6.25rem;
+				background-color: green;
+				display: inline-block;
+				border: solid 1px white;
+				vertical-align: middle;
+				 line-height: 6.25rem;
+				 font-size: 50px;
+				 text-align: center;
+				 color: red;
+				 font-weight: bold;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div id="board"></div>
+		<script type="text/javascript">
+			let pattern = [
+				[2,0,0],
+				[0,1,0],
+				[0,0,0]
+			];
+			let  color = 1;
+			function show (pattern) {
+				let board = document.getElementById("board");
+				board.innerHTML = "";
+				for (let i = 0; i<3; i++) {
+					for (let j = 0; j<3; j++) {
+						let cell = document.createElement("div");
+						cell.classList.add("cell");
+						cell.innerText = pattern[i][j] == 2? "X": pattern[i][j] == 1? "O":"";
+						cell.addEventListener("click", () => moveCell(j, i));
+						board.appendChild(cell);
+					};
+					board.appendChild(document.createElement("br"));
+				};
+			};
+			function moveCell (x, y) {
+				pattern[y][x] = color;
+				if (check(pattern, color)) {
+					alert(color == 2 ? "X is winner" : "O is winner");
+				};
+				color = 3 - color;
+				show(pattern);
+				if (willWin(pattern, color)) {
+					console.warn(color == 2? "X will win!" : "O will win!");
+				};
+			};
+			function check(pattern, color) {				
+				for (let i = 0; i<3; i++) { // 行
+					let win =  true;
+					for (let j = 0; j<3; j++) {
+						if (pattern[i][j] !== color) {
+							win = false;
+						};
+					};
+					if (win) return true;
+				};
+				
+				for (let i = 0; i<3; i++) { // 列
+					let win =  true;
+					for (let j = 0; j<3; j++) {
+						if (pattern[j][i] !== color) {
+							win = false;
+						};
+					};
+					if (win) return true;
+				};
+				
+				{ // 右斜
+					let win = true;
+					for (let j = 0; j<3; j++) {
+						if (pattern[j][2 - j] !== color) win = false;
+					};
+					if (win) return true;
+				};
+				{ // 左斜
+					let win = true;
+					for (let j = 0; j<3; j++) {
+						if (pattern[j][j] !== color) win = false;
+					};
+					if (win) return true;
+				};
+			};
+			function willWin(pattern, color) {
+				for (let i = 0; i<3; i++) {
+					for (let j = 0; j<3; j++) {
+						if(pattern[i][j]) continue;
+						let tmp  = JSON.parse(JSON.stringify(pattern));
+						tmp[i][j] = color;
+						if (check(tmp, color)) {
+							return true;
+						};
+					};
+				};
+				return null;
+			};
+			function bestChoice(pattern, color){
+				let p;
+				if (p = willWin(pattern, color)) {
+					return {
+						point: p,
+						result: 1
+					};
+				};
+				let result = -2;
+				let point = null;
+				for (let i = 0; i<3; i++) {
+					for (let j = 0; j<3; j++) {
+						if (pattern[i][j]) continue;
+						let tem = JSON.parse(JSON.stringify(pattern));
+						tem[i][j] = color;
+						let r = bestChoice(tem, 3 - color).result;
+						if(-r > result) {
+							result = -r;
+							point = [j, i];
+						};
+					};
+				};
+				return {
+					point: point,
+					result: point ? result : 0
+				}
+			};
+			show(pattern);
+			
+			
+		</script>
+	</body>
+</html>
