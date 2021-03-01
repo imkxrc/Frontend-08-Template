@@ -8,7 +8,7 @@ httpd.createServer((req,res)=>{
         //失败返回404
         if(err){
 　　　　　　　　 res.writeHeader(404);
-            res.write('<h1>404</h1>');
+                res.write('<h1>404</h1>');
         }else{
             //成功返回页面
             res.write(data);
